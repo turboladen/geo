@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `EdgeHandle` struct in crate `spade`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, EdgeHandle">
+
+    <title>spade::delaunay::EdgeHandle - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../normalize.css">
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc struct">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'>Struct EdgeHandle</p><div class="block items"><ul><li><a href="#methods">Methods</a></li><li><a href="#implementations">Trait Implementations</a></li></ul></div><p class='location'><a href='../index.html'>spade</a>::<wbr><a href='index.html'>delaunay</a></p><script>window.sidebarCurrent = {name: 'EdgeHandle', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>spade</a>::<wbr><a href='index.html'>delaunay</a>::<wbr><a class="struct" href=''>EdgeHandle</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../../src/spade/delaunay/dcel.rs.html#712-715' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct EdgeHandle&lt;'a, V&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;V: 'a,&nbsp;</span> { /* fields omitted */ }</pre><div class='docblock'><p>A handle to a directed edge.</p>
+
+<p>This handle has methods that can be used to
+retrieve the edges neighboring edges, faces
+and vertices.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;'a, V&gt; <a class="struct" href="../../spade/delaunay/struct.EdgeHandle.html" title="struct spade::delaunay::EdgeHandle">EdgeHandle</a>&lt;'a, V&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;V: 'a,&nbsp;</span></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/spade/delaunay/dcel.rs.html#825-926' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.fix' class="method"><span id='fix.v' class='invisible'><code>fn <a href='#method.fix' class='fnname'>fix</a>(&amp;self) -&gt; <a class="type" href="../../spade/delaunay/type.FixedEdgeHandle.html" title="type spade::delaunay::FixedEdgeHandle">FixedEdgeHandle</a></code></span></h4>
+<div class='docblock'><p>Creates a fixed vertex handle from this dynamic handle.</p>
+</div><h4 id='method.from' class="method"><span id='from.v' class='invisible'><code>fn <a href='#method.from' class='fnname'>from</a>(&amp;self) -&gt; <a class="struct" href="../../spade/delaunay/struct.VertexHandle.html" title="struct spade::delaunay::VertexHandle">VertexHandle</a>&lt;'a, V&gt;</code></span></h4>
+<div class='docblock'><p>Returns the edge&#39;s source vertex.</p>
+</div><h4 id='method.o_next' class="method"><span id='o_next.v' class='invisible'><code>fn <a href='#method.o_next' class='fnname'>o_next</a>(&amp;self) -&gt; <a class="struct" href="../../spade/delaunay/struct.EdgeHandle.html" title="struct spade::delaunay::EdgeHandle">EdgeHandle</a>&lt;'a, V&gt;</code></span></h4>
+<div class='docblock'><p>Returns the oriented next edge.</p>
+
+<p>The oriented next edge shares the same face as this edge.
+When traversing the face&#39;s edges in oriented order,
+this edge is the predecessor of the oriented next edge.
+&quot;Oriented&quot; means counterclockwise for right handed 
+coordinate systems.</p>
+</div><h4 id='method.o_prev' class="method"><span id='o_prev.v' class='invisible'><code>fn <a href='#method.o_prev' class='fnname'>o_prev</a>(&amp;self) -&gt; <a class="struct" href="../../spade/delaunay/struct.EdgeHandle.html" title="struct spade::delaunay::EdgeHandle">EdgeHandle</a>&lt;'a, V&gt;</code></span></h4>
+<div class='docblock'><p>Returns the oriented previous edge.</p>
+
+<p>The oriented previous edge shares the same face as this edge.
+When traversing the face&#39;s edges in oriented order,
+this edge is the successor of the oriented previous edge.
+&quot;Oriented&quot; means counterclockwise for right handed
+coordinate systems.</p>
+</div><h4 id='method.o_next_iterator' class="method"><span id='o_next_iterator.v' class='invisible'><code>fn <a href='#method.o_next_iterator' class='fnname'>o_next_iterator</a>(&amp;self) -&gt; <a class="struct" href="../../spade/delaunay/struct.ONextIterator.html" title="struct spade::delaunay::ONextIterator">ONextIterator</a>&lt;'a, V&gt;</code></span></h4>
+<div class='docblock'><p>Returns an iterator over all edges sharing the same face
+as this edge.</p>
+
+<p>The face&#39;s edges will be traversed in oriented order.
+This order is counterclockwise for right handed coordinate
+systems or clockwise for left handed systems.</p>
+</div><h4 id='method.to' class="method"><span id='to.v' class='invisible'><code>fn <a href='#method.to' class='fnname'>to</a>(&amp;self) -&gt; <a class="struct" href="../../spade/delaunay/struct.VertexHandle.html" title="struct spade::delaunay::VertexHandle">VertexHandle</a>&lt;'a, V&gt;</code></span></h4>
+<div class='docblock'><p>Returns the edges destination vertex.</p>
+</div><h4 id='method.face' class="method"><span id='face.v' class='invisible'><code>fn <a href='#method.face' class='fnname'>face</a>(&amp;self) -&gt; <a class="struct" href="../../spade/delaunay/struct.FaceHandle.html" title="struct spade::delaunay::FaceHandle">FaceHandle</a>&lt;'a, V&gt;</code></span></h4>
+<div class='docblock'><p>Returns the face located to the left of this edge.</p>
+</div><h4 id='method.sym' class="method"><span id='sym.v' class='invisible'><code>fn <a href='#method.sym' class='fnname'>sym</a>(&amp;self) -&gt; <a class="struct" href="../../spade/delaunay/struct.EdgeHandle.html" title="struct spade::delaunay::EdgeHandle">EdgeHandle</a>&lt;'a, V&gt;</code></span></h4>
+<div class='docblock'><p>Returns this edge&#39;s mirror edge.</p>
+</div><h4 id='method.cw' class="method"><span id='cw.v' class='invisible'><code>fn <a href='#method.cw' class='fnname'>cw</a>(&amp;self) -&gt; <a class="struct" href="../../spade/delaunay/struct.EdgeHandle.html" title="struct spade::delaunay::EdgeHandle">EdgeHandle</a>&lt;'a, V&gt;</code></span></h4>
+<div class='docblock'><p>Returns the next edge in clockwise direction.</p>
+
+<p>Note that this assumes that you use a right handed coordinate system,
+otherwise the sense of orientation is inverted.</p>
+</div><h4 id='method.ccw' class="method"><span id='ccw.v' class='invisible'><code>fn <a href='#method.ccw' class='fnname'>ccw</a>(&amp;self) -&gt; <a class="struct" href="../../spade/delaunay/struct.EdgeHandle.html" title="struct spade::delaunay::EdgeHandle">EdgeHandle</a>&lt;'a, V&gt;</code></span></h4>
+<div class='docblock'><p>Returns the next edge in counter clockwise direction.</p>
+
+<p>Note that this assumes that you use a right handed coordinate system,
+otherwise the sense of orientation is inverted.</p>
+</div><h4 id='method.ccw_iter' class="method"><span id='ccw_iter.v' class='invisible'><code>fn <a href='#method.ccw_iter' class='fnname'>ccw_iter</a>(&amp;self) -&gt; <a class="struct" href="../../spade/delaunay/struct.CCWIterator.html" title="struct spade::delaunay::CCWIterator">CCWIterator</a>&lt;'a, V&gt;</code></span></h4>
+<div class='docblock'><p>Returns an iterator over all edges in counter clockwise
+order.</p>
+
+<p>Note that this assumes that you use a right handed coordinate system,
+otherwise the sense of orientation is inverted.</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl&lt;'a, V&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html" title="trait core::marker::Copy">Copy</a> for <a class="struct" href="../../spade/delaunay/struct.EdgeHandle.html" title="struct spade::delaunay::EdgeHandle">EdgeHandle</a>&lt;'a, V&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;V: 'a,&nbsp;</span></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/spade/delaunay/dcel.rs.html#792' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'></div><h3 class='impl'><span class='in-band'><code>impl&lt;'a, V&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> for <a class="struct" href="../../spade/delaunay/struct.EdgeHandle.html" title="struct spade::delaunay::EdgeHandle">EdgeHandle</a>&lt;'a, V&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;V: 'a,&nbsp;</span></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/spade/delaunay/dcel.rs.html#794-798' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.clone' class="method"><span id='clone.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone' class='fnname'>clone</a>(&amp;self) -&gt; Self</code></span></h4>
+<div class='docblock'><p>Returns a copy of the value. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">Read more</a></p>
+</div><h4 id='method.clone_from' class="method"><span id='clone_from.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div></span></h4>
+<div class='docblock'><p>Performs copy-assignment from <code>source</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from">Read more</a></p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;'a, V&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html" title="trait core::cmp::PartialEq">PartialEq</a> for <a class="struct" href="../../spade/delaunay/struct.EdgeHandle.html" title="struct spade::delaunay::EdgeHandle">EdgeHandle</a>&lt;'a, V&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;V: 'a,&nbsp;</span></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/spade/delaunay/dcel.rs.html#800-804' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.eq' class="method"><span id='eq.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#tymethod.eq' class='fnname'>eq</a>(&amp;self, other: &amp;<a class="struct" href="../../spade/delaunay/struct.EdgeHandle.html" title="struct spade::delaunay::EdgeHandle">EdgeHandle</a>&lt;'a, V&gt;) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h4>
+<div class='docblock'><p>This method tests for <code>self</code> and <code>other</code> values to be equal, and is used by <code>==</code>. <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#tymethod.eq">Read more</a></p>
+</div><h4 id='method.ne' class="method"><span id='ne.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#method.ne' class='fnname'>ne</a>(&amp;self, other: &amp;Rhs) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div></span></h4>
+<div class='docblock'><p>This method tests for <code>!=</code>.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;'a, V&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a> for <a class="struct" href="../../spade/delaunay/struct.EdgeHandle.html" title="struct spade::delaunay::EdgeHandle">EdgeHandle</a>&lt;'a, V&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;V: 'a,&nbsp;</span></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/spade/delaunay/dcel.rs.html#806-810' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.fmt' class="method"><span id='fmt.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, f: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html" title="struct core::fmt::Formatter">Formatter</a>) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html" title="type core::fmt::Result">Result</a></code></span></h4>
+<div class='docblock'><p>Formats the value using the given formatter.</p>
+</div></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "spade";
+    </script>
+    <script src="../../main.js"></script>
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

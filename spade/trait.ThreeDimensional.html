@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `ThreeDimensional` trait in crate `spade`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, ThreeDimensional">
+
+    <title>spade::ThreeDimensional - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../normalize.css">
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc trait">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'>Trait ThreeDimensional</p><div class="block items"><ul><li><a href="#provided-methods">Provided Methods</a></li><li><a href="#implementors">Implementors</a></li></ul></div><p class='location'><a href='index.html'>spade</a></p><script>window.sidebarCurrent = {name: 'ThreeDimensional', ty: 'trait', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Trait <a href='index.html'>spade</a>::<wbr><a class="trait" href=''>ThreeDimensional</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../src/spade/point_traits.rs.html#149-161' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait ThreeDimensional: <a class="trait" href="../spade/trait.PointN.html" title="trait spade::PointN">PointN</a> {
+    fn <a href='#method.cross' class='fnname'>cross</a>(&amp;self, other: &amp;Self) -&gt; Self { ... }
+}</pre><div class='docblock'><p>A three dimensional Point.</p>
+
+<p>Some algorithms will only work with three dimensional points, this trait makes
+sure that only such points can be used.</p>
+</div>
+            <h2 id='provided-methods'>Provided Methods</h2>
+            <div class='methods'>
+        <h3 id='method.cross' class='method'><span id='cross.v' class='invisible'><code>fn <a href='#method.cross' class='fnname'>cross</a>(&amp;self, other: &amp;Self) -&gt; Self</code></span></h3><div class='docblock'><p>The cross product of this point and another.</p>
+</div></div>
+        <h2 id='implementors'>Implementors</h2>
+        <ul class='item-list' id='implementors-list'>
+    <li><code>impl&lt;S:&nbsp;<a class="trait" href="../spade/trait.SpadeNum.html" title="trait spade::SpadeNum">SpadeNum</a> + <a class="trait" href="../cgmath/num/trait.BaseNum.html" title="trait cgmath::num::BaseNum">BaseNum</a>&gt; ThreeDimensional for cgmath::point::<a class="struct" href="../cgmath/point/struct.Point3.html" title="struct cgmath::point::Point3">Point3</a>&lt;S&gt;</code></li>
+<li><code>impl&lt;S:&nbsp;<a class="trait" href="../spade/trait.SpadeNum.html" title="trait spade::SpadeNum">SpadeNum</a> + <a class="trait" href="../nalgebra/core/scalar/trait.Scalar.html" title="trait nalgebra::core::scalar::Scalar">Scalar</a>&gt; ThreeDimensional for nalgebra::geometry::point_alias::<a class="type" href="../nalgebra/geometry/point_alias/type.Point3.html" title="type nalgebra::geometry::point_alias::Point3">Point3</a>&lt;S&gt;</code></li>
+<li><code>impl&lt;S:&nbsp;<a class="trait" href="../spade/trait.SpadeNum.html" title="trait spade::SpadeNum">SpadeNum</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html" title="trait core::marker::Copy">Copy</a>&gt; ThreeDimensional for <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.array.html">[</a>S<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.array.html">; 3]</a></code></li>
+</ul><script type="text/javascript" async
+                         src="../implementors/spade/trait.ThreeDimensional.js">
+                 </script></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "spade";
+    </script>
+    <script src="../main.js"></script>
+    <script defer src="../search-index.js"></script>
+</body>
+</html>
