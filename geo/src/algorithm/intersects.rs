@@ -78,6 +78,15 @@ where
     }
 }
 
+impl<T> Intersects<Polygon<T>> for Point<T>
+where
+    T: Float,
+{
+    fn intersects(&self, polygon: &Polygon<T>) -> bool {
+        polygon.intersects(self)
+    }
+}
+
 impl<T> Intersects<Line<T>> for Line<T>
 where
     T: Float,
@@ -146,6 +155,17 @@ where
             || p.interiors.iter().any(|inner| inner.intersects(self))
             || p.contains(&self.start_point())
             || p.contains(&self.end_point())
+    }
+}
+
+impl<T> Intersects<Point<T>> for Polygon<T>
+where
+    T: Float,
+{
+    fn intersects(&self, point: &Point<T>) -> bool {
+        self.exterior.intersects(point)
+            || self.interiors.iter().any(|inner| inner.intersects(point))
+            || self.contains(point)
     }
 }
 
