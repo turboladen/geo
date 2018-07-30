@@ -1,6 +1,6 @@
 use algorithm::intersects::Intersects;
 use num_traits::Float;
-use geo_types::{Line, LineString, Point};
+use geo_types::{Line, LineString, Point, Polygon};
 
 /// Describes the possible outcomes of intersecting a Point with another Geometry.
 ///
@@ -22,6 +22,14 @@ pub enum LineIntersection<T: Float> {
 ///
 #[derive(Debug, PartialEq)]
 pub enum LineStringIntersection<T: Float> {
+    Point(Point<T>),
+    None
+}
+
+/// Describes the possible outcomes of intersecting a Polygon with another Geometry.
+///
+#[derive(Debug, PartialEq)]
+pub enum PolygonIntersection<T: Float> {
     Point(Point<T>),
     None
 }
@@ -57,6 +65,28 @@ impl<T> Intersection<Line<T>> for Point<T> where T: Float {
     }
 }
 
+impl<T> Intersection<LineString<T>> for Point<T> where T: Float {
+    type Output = PointIntersection<T>;
+
+    fn intersection(&self, rhs: &LineString<T>) -> Self::Output {
+        match rhs.intersection(self) {
+            LineStringIntersection::Point(p) => PointIntersection::Point(p.clone()),
+            _ => PointIntersection::None,
+        }
+    }
+}
+
+impl<T> Intersection<Polygon<T>> for Point<T> where T: Float {
+    type Output = PointIntersection<T>;
+
+    fn intersection(&self, rhs: &Polygon<T>) -> Self::Output {
+        match rhs.intersection(self) {
+            PolygonIntersection::Point(p) => PointIntersection::Point(p.clone()),
+            _ => PointIntersection::None,
+        }
+    }
+}
+
 impl<T> Intersection<Point<T>> for Line<T> where T: Float {
     type Output = LineIntersection<T>;
 
@@ -81,29 +111,38 @@ impl<T> Intersection<Point<T>> for LineString<T> where T: Float {
     }
 }
 
+impl<T> Intersection<Point<T>> for Polygon<T> where T: Float {
+    type Output = PolygonIntersection<T>;
+
+    fn intersection(&self, rhs: &Point<T>) -> Self::Output {
+        if self.intersects(rhs) {
+            PolygonIntersection::Point(rhs.clone())
+        } else {
+            PolygonIntersection::None
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use geo_types::{Coordinate, Line, Point};
     use super::*;
 
     #[test]
-    fn point_with_intersecting_point() {
+    fn point_with_point() {
         let p1 = Point::new(1.0, 1.0);
         let p2 = p1.clone();
 
         assert_eq!(p1.intersection(&p2), PointIntersection::Point(p1.clone()));
-    }
 
-    #[test]
-    fn point_with_no_intersecting_point() {
-        let p1 = Point::new(1.0, 1.0);
+        // Not intersecting
         let p2 = Point::new(2.0, 2.0);
 
         assert_eq!(p1.intersection(&p2), PointIntersection::None)
     }
 
     #[test]
-    fn line_with_intersecting_point() {
+    fn line_with_point() {
         let line = Line::new(
             Coordinate { x: 0.0, y: 0.0 },
             Coordinate { x: 10.0, y: 0.0 },
@@ -143,7 +182,7 @@ mod tests {
     }
 
     #[test]
-    fn linestring_with_intersecting_point() {
+    fn linestring_with_point() {
         let line_string: LineString<f32> = vec![(0.0, 0.0), (10.0, 0.0)].into();
 
         // Start of LineString
@@ -176,6 +215,71 @@ mod tests {
         assert_eq!(
             line_string.intersection(&point),
             LineStringIntersection::None,
+        );
+    }
+
+    #[test]
+    fn polygon_with_point() {
+        let exterior = LineString(vec![
+                                  Coordinate { x: 0.0, y: 0.0 },
+                                  Coordinate { x: 1.0, y: 1.0 },
+                                  Coordinate { x: 1.0, y: 0.0 },
+                                  Coordinate { x: 0.0, y: 0.0 },
+        ]);
+        let interiors = vec![LineString(vec![
+                                        Coordinate { x: 0.1, y: 0.1 },
+                                        Coordinate { x: 0.9, y: 0.9 },
+                                        Coordinate { x: 0.9, y: 0.1 },
+                                        Coordinate { x: 0.1, y: 0.1 },
+        ])];
+        let polygon = Polygon::new(exterior, interiors);
+
+        // Start of Polygon exterior
+        let point = Point::new(0.0, 0.0);
+
+        assert_eq!(
+            polygon.intersection(&point),
+            PolygonIntersection::Point(point.clone())
+        );
+
+        // On Polygon exterior
+        let point = Point::new(0.5, 0.0);
+
+        assert_eq!(
+            polygon.intersection(&point),
+            PolygonIntersection::Point(point.clone())
+        );
+
+        // Start of Polygon interior
+        let point = Point::new(0.1, 0.1);
+
+        assert_eq!(
+            polygon.intersection(&point),
+            PolygonIntersection::Point(point.clone())
+        );
+
+        // On Polygon interior
+        let point = Point::new(0.9, 0.4);
+
+        assert_eq!(
+            polygon.intersection(&point),
+            PolygonIntersection::Point(point.clone())
+        );
+
+        // In Polygon interior
+        let point = Point::new(0.05, 0.05);
+
+        assert_eq!(
+            polygon.intersection(&point),
+            PolygonIntersection::Point(point.clone())
+        );
+
+        // Not in or on Polygon
+        let point = Point::new(10.0, 10.0);
+
+        assert_eq!(
+            polygon.intersection(&point),
+            PolygonIntersection::None,
         );
     }
 }
