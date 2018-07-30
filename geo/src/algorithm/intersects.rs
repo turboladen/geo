@@ -69,6 +69,15 @@ where
     }
 }
 
+impl<T> Intersects<LineString<T>> for Point<T>
+where
+    T: Float,
+{
+    fn intersects(&self, line_string: &LineString<T>) -> bool {
+        line_string.intersects(self)
+    }
+}
+
 impl<T> Intersects<Line<T>> for Line<T>
 where
     T: Float,
@@ -107,6 +116,15 @@ where
 {
     fn intersects(&self, linestring: &LineString<T>) -> bool {
         linestring.lines().any(|line| self.intersects(&line))
+    }
+}
+
+impl<T> Intersects<Point<T>> for LineString<T>
+where
+    T: Float,
+{
+    fn intersects(&self, point: &Point<T>) -> bool {
+        self.lines().any(|line| line.intersects(point))
     }
 }
 

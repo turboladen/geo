@@ -73,7 +73,7 @@ impl<T> Intersection<Point<T>> for LineString<T> where T: Float {
     type Output = LineStringIntersection<T>;
 
     fn intersection(&self, rhs: &Point<T>) -> Self::Output {
-        if self.lines().any(|line| line.intersects(rhs)) {
+        if self.intersects(rhs) {
             LineStringIntersection::Point(rhs.clone())
         } else {
             LineStringIntersection::None
