@@ -1,6 +1,6 @@
 use algorithm::intersects::Intersects;
 use num_traits::Float;
-use geo_types::{Line, LineString, MultiPoint, Point, Polygon};
+use geo_types::{Line, LineString, MultiLineString, MultiPoint, Point, Polygon};
 
 /// Describes the possible outcomes of intersecting a Point with another Geometry.
 ///
@@ -38,6 +38,14 @@ pub enum PolygonIntersection<T: Float> {
 ///
 #[derive(Debug, PartialEq)]
 pub enum MultiPointIntersection<T: Float> {
+    Point(Point<T>),
+    None
+}
+
+/// Describes the possible outcomes of intersecting a MultiLineString with another Geometry.
+///
+#[derive(Debug, PartialEq)]
+pub enum MultiLineStringIntersection<T: Float> {
     Point(Point<T>),
     None
 }
@@ -106,6 +114,17 @@ impl<T> Intersection<MultiPoint<T>> for Point<T> where T: Float {
     }
 }
 
+impl<T> Intersection<MultiLineString<T>> for Point<T> where T: Float {
+    type Output = PointIntersection<T>;
+
+    fn intersection(&self, rhs: &MultiLineString<T>) -> Self::Output {
+        match rhs.intersection(self) {
+            MultiLineStringIntersection::Point(p) => PointIntersection::Point(p.clone()),
+            _ => PointIntersection::None,
+        }
+    }
+}
+
 impl<T> Intersection<Point<T>> for Line<T> where T: Float {
     type Output = LineIntersection<T>;
 
@@ -150,6 +169,18 @@ impl<T> Intersection<Point<T>> for MultiPoint<T> where T: Float {
             MultiPointIntersection::Point(rhs.clone())
         } else {
             MultiPointIntersection::None
+        }
+    }
+}
+
+impl<T> Intersection<Point<T>> for MultiLineString<T> where T: Float {
+    type Output = MultiLineStringIntersection<T>;
+
+    fn intersection(&self, rhs: &Point<T>) -> Self::Output {
+        if self.intersects(rhs) {
+            MultiLineStringIntersection::Point(rhs.clone())
+        } else {
+            MultiLineStringIntersection::None
         }
     }
 }
@@ -339,6 +370,45 @@ mod tests {
         assert_eq!(
             multi_point.intersection(&point),
             MultiPointIntersection::None,
+        );
+    }
+
+    #[test]
+    fn multilinestring_with_point() {
+        let line_string1: LineString<f32> = vec![(0.0, 0.0), (10.0, 0.0)].into();
+        let line_string2: LineString<f32> = vec![(100.0, 100.0), (200.0, 100.0)].into();
+        let mls = MultiLineString(vec![line_string1, line_string2]);
+
+        // Start of first LineString in MultiLineString
+        let point = Point::new(0.0, 0.0);
+
+        assert_eq!(
+            mls.intersection(&point),
+            MultiLineStringIntersection::Point(point.clone())
+        );
+
+        // On first LineString in MultiLineString
+        let point = Point::new(5.0, 0.0);
+
+        assert_eq!(
+            mls.intersection(&point),
+            MultiLineStringIntersection::Point(point.clone())
+        );
+
+        // On second LineString in MultiLineString
+        let point = Point::new(150.0, 100.0);
+
+        assert_eq!(
+            mls.intersection(&point),
+            MultiLineStringIntersection::Point(point.clone())
+        );
+
+        // Not on MultiLineString
+        let point = Point::new(10.0, 10.0);
+
+        assert_eq!(
+            mls.intersection(&point),
+            MultiLineStringIntersection::None,
         );
     }
 }
