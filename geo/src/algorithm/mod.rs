@@ -31,6 +31,8 @@ pub mod haversine_intermediate;
 pub mod haversine_length;
 /// Checks if the geometry A intersects the geometry B.
 pub mod intersects;
+/// Returns the intersection of geometry A and geometry B.
+pub mod intersection;
 /// Apply a function to all coordinates.
 pub mod map_coords;
 /// Orients a Polygon's exterior and interior rings.
