@@ -1,5 +1,6 @@
+use algorithm::intersects::Intersects;
 use num_traits::Float;
-use geo_types::{Line, Point};
+use geo_types::{Line, LineString, Point};
 
 /// Describes the possible outcomes of intersecting a Point with another Geometry.
 ///
@@ -9,10 +10,18 @@ pub enum PointIntersection<T: Float> {
     None
 }
 
-/// Describes the possible outcomes of intersecting a Point with another Geometry.
+/// Describes the possible outcomes of intersecting a Line with another Geometry.
 ///
 #[derive(Debug, PartialEq)]
 pub enum LineIntersection<T: Float> {
+    Point(Point<T>),
+    None
+}
+
+/// Describes the possible outcomes of intersecting a LineString with another Geometry.
+///
+#[derive(Debug, PartialEq)]
+pub enum LineStringIntersection<T: Float> {
     Point(Point<T>),
     None
 }
@@ -37,11 +46,22 @@ impl<T> Intersection for Point<T> where T: Float {
     }
 }
 
+impl<T> Intersection<Line<T>> for Point<T> where T: Float {
+    type Output = PointIntersection<T>;
+
+    fn intersection(&self, rhs: &Line<T>) -> Self::Output {
+        match rhs.intersection(self) {
+            LineIntersection::Point(p) => PointIntersection::Point(p.clone()),
+            _ => PointIntersection::None,
+        }
+    }
+}
+
 impl<T> Intersection<Point<T>> for Line<T> where T: Float {
     type Output = LineIntersection<T>;
 
     fn intersection(&self, rhs: &Point<T>) -> Self::Output {
-        if [self.start, self.end].contains(&rhs.0) {
+        if rhs.intersects(self) {
             LineIntersection::Point(rhs.clone())
         } else {
             LineIntersection::None
@@ -49,10 +69,22 @@ impl<T> Intersection<Point<T>> for Line<T> where T: Float {
     }
 }
 
+impl<T> Intersection<Point<T>> for LineString<T> where T: Float {
+    type Output = LineStringIntersection<T>;
+
+    fn intersection(&self, rhs: &Point<T>) -> Self::Output {
+        if self.lines().any(|line| line.intersects(rhs)) {
+            LineStringIntersection::Point(rhs.clone())
+        } else {
+            LineStringIntersection::None
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use geo_types::{Coordinate, Line, Point};
-    use super::{Intersection, LineIntersection, PointIntersection};
+    use super::*;
 
     #[test]
     fn point_with_intersecting_point() {
@@ -73,37 +105,77 @@ mod tests {
     #[test]
     fn line_with_intersecting_point() {
         let line = Line::new(
-            Coordinate { x: 1.0, y: 1.0 },
-            Coordinate { x: 2.0, y: 2.0 },
+            Coordinate { x: 0.0, y: 0.0 },
+            Coordinate { x: 10.0, y: 0.0 },
         );
 
-        let point = Point::new(1.0, 1.0);
+        // Start of the line
+        let point = Point::new(0.0, 0.0);
 
         assert_eq!(
             line.intersection(&point),
             LineIntersection::Point(point.clone())
         );
 
-        let point = Point::new(2.0, 2.0);
+        // On the line
+        let point = Point::new(5.0, 0.0);
 
         assert_eq!(
             line.intersection(&point),
             LineIntersection::Point(point.clone())
         );
-    }
 
-    #[test]
-    fn line_with_no_intersecting_point() {
-        let line = Line::new(
-            Coordinate { x: 10.0, y: 10.0 },
-            Coordinate { x: 20.0, y: 10.0 },
+        // End of the line
+        let point = Point::new(10.0, 0.0);
+
+        assert_eq!(
+            line.intersection(&point),
+            LineIntersection::Point(point.clone())
         );
 
+        // Not on the line
         let point = Point::new(1.0, 1.0);
 
         assert_eq!(
             line.intersection(&point),
             LineIntersection::None
+        );
+    }
+
+    #[test]
+    fn linestring_with_intersecting_point() {
+        let line_string: LineString<f32> = vec![(0.0, 0.0), (10.0, 0.0)].into();
+
+        // Start of LineString
+        let point = Point::new(0.0, 0.0);
+
+        assert_eq!(
+            line_string.intersection(&point),
+            LineStringIntersection::Point(point.clone())
+        );
+
+        // On of LineString
+        let point = Point::new(5.0, 0.0);
+
+        assert_eq!(
+            line_string.intersection(&point),
+            LineStringIntersection::Point(point.clone())
+        );
+
+        // End of LineString
+        let point = Point::new(10.0, 0.0);
+
+        assert_eq!(
+            line_string.intersection(&point),
+            LineStringIntersection::Point(point.clone())
+        );
+
+        // Not on LineString
+        let point = Point::new(10.0, 10.0);
+
+        assert_eq!(
+            line_string.intersection(&point),
+            LineStringIntersection::None,
         );
     }
 }
