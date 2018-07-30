@@ -1,6 +1,6 @@
 use algorithm::contains::Contains;
 use num_traits::Float;
-use {Line, LineString, Point, Polygon, Rect};
+use {Line, LineString, MultiPoint, Point, Polygon, Rect};
 
 /// Checks if the geometry A intersects the geometry B.
 
@@ -84,6 +84,15 @@ where
 {
     fn intersects(&self, polygon: &Polygon<T>) -> bool {
         polygon.intersects(self)
+    }
+}
+
+impl<T> Intersects<MultiPoint<T>> for Point<T>
+where
+    T: Float,
+{
+    fn intersects(&self, multi_point: &MultiPoint<T>) -> bool {
+        multi_point.intersects(self)
     }
 }
 
@@ -175,6 +184,15 @@ where
 {
     fn intersects(&self, line: &Line<T>) -> bool {
         line.intersects(self)
+    }
+}
+
+impl<T> Intersects<Point<T>> for MultiPoint<T>
+where
+    T: Float,
+{
+    fn intersects(&self, point: &Point<T>) -> bool {
+        self.0.contains(point)
     }
 }
 
