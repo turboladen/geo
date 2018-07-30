@@ -1,6 +1,6 @@
 use algorithm::intersects::Intersects;
 use num_traits::Float;
-use geo_types::{Line, LineString, Point, Polygon};
+use geo_types::{Line, LineString, MultiPoint, Point, Polygon};
 
 /// Describes the possible outcomes of intersecting a Point with another Geometry.
 ///
@@ -30,6 +30,14 @@ pub enum LineStringIntersection<T: Float> {
 ///
 #[derive(Debug, PartialEq)]
 pub enum PolygonIntersection<T: Float> {
+    Point(Point<T>),
+    None
+}
+
+/// Describes the possible outcomes of intersecting a MultiPoint with another Geometry.
+///
+#[derive(Debug, PartialEq)]
+pub enum MultiPointIntersection<T: Float> {
     Point(Point<T>),
     None
 }
@@ -87,6 +95,17 @@ impl<T> Intersection<Polygon<T>> for Point<T> where T: Float {
     }
 }
 
+impl<T> Intersection<MultiPoint<T>> for Point<T> where T: Float {
+    type Output = PointIntersection<T>;
+
+    fn intersection(&self, rhs: &MultiPoint<T>) -> Self::Output {
+        match rhs.intersection(self) {
+            MultiPointIntersection::Point(p) => PointIntersection::Point(p.clone()),
+            _ => PointIntersection::None,
+        }
+    }
+}
+
 impl<T> Intersection<Point<T>> for Line<T> where T: Float {
     type Output = LineIntersection<T>;
 
@@ -119,6 +138,18 @@ impl<T> Intersection<Point<T>> for Polygon<T> where T: Float {
             PolygonIntersection::Point(rhs.clone())
         } else {
             PolygonIntersection::None
+        }
+    }
+}
+
+impl<T> Intersection<Point<T>> for MultiPoint<T> where T: Float {
+    type Output = MultiPointIntersection<T>;
+
+    fn intersection(&self, rhs: &Point<T>) -> Self::Output {
+        if self.intersects(rhs) {
+            MultiPointIntersection::Point(rhs.clone())
+        } else {
+            MultiPointIntersection::None
         }
     }
 }
@@ -280,6 +311,34 @@ mod tests {
         assert_eq!(
             polygon.intersection(&point),
             PolygonIntersection::None,
+        );
+    }
+
+    #[test]
+    fn multipoint_with_point() {
+        let points = vec![
+            Point::new(0.0, 0.0),
+            Point::new(1.0, 1.0),
+            Point::new(1.0, 0.0),
+            Point::new(0.0, 0.0),
+        ];
+
+        let multi_point = MultiPoint(points);
+
+        // Point on MultiPoint
+        let point = Point::new(0.0, 0.0);
+
+        assert_eq!(
+            multi_point.intersection(&point),
+            MultiPointIntersection::Point(point.clone())
+        );
+
+        // Not in or on MultiPoint
+        let point = Point::new(10.0, 10.0);
+
+        assert_eq!(
+            multi_point.intersection(&point),
+            MultiPointIntersection::None,
         );
     }
 }
