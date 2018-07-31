@@ -70,7 +70,7 @@ impl<T> Intersection for Point<T> where T: Float {
     type Output = PointIntersection<T>;
 
     fn intersection(&self, rhs: &Point<T>) -> Self::Output {
-        if self.eq(rhs) {
+        if self.intersects(rhs) {
             PointIntersection::Point(self.clone())
         } else {
             PointIntersection::None

@@ -24,6 +24,15 @@ pub trait Intersects<Rhs = Self> {
     fn intersects(&self, rhs: &Rhs) -> bool;
 }
 
+impl<T> Intersects<Point<T>> for Point<T>
+where
+    T: Float,
+{
+    fn intersects(&self, p: &Point<T>) -> bool {
+        self.eq(p)
+    }
+}
+
 impl<T> Intersects<Point<T>> for Line<T>
 where
     T: Float,
