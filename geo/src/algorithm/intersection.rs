@@ -210,6 +210,54 @@ mod tests {
     use geo_types::{Coordinate, Line, Point};
     use super::*;
 
+    // Apparently line![] is already take?
+    macro_rules! build_line {
+        (
+            ($x1:expr, $y1:expr), ($x2:expr, $y2:expr)
+        ) => {
+            Line::new(
+                Coordinate { x: $x1, y: $y1 },
+                Coordinate { x: $x2, y: $y2 }
+            )
+        };
+    }
+
+    macro_rules! line_string {
+        (
+            $(
+                ($x:expr, $y:expr)
+            ),* $(,)*
+        ) => {
+            {
+                let coordinates = vec![
+                    $(
+                        Coordinate { x: $x, y: $y },
+                    )*
+                ];
+
+                LineString(coordinates)
+            }
+        };
+    }
+
+    macro_rules! multi_point {
+        (
+            $(
+                ($x:expr, $y:expr)
+            ),* $(,)*
+        ) => {
+            {
+                let points = vec![
+                    $(
+                        Point::new($x, $y),
+                    )*
+                ];
+
+                MultiPoint(points)
+            }
+        };
+    }
+
     #[test]
     fn point_with_point() {
         let p1 = Point::new(1.0, 1.0);
@@ -225,10 +273,7 @@ mod tests {
 
     #[test]
     fn line_with_point() {
-        let line = Line::new(
-            Coordinate { x: 0.0, y: 0.0 },
-            Coordinate { x: 10.0, y: 0.0 },
-        );
+        let line = build_line![(0.0, 0.0), (10.0, 0.0)];
 
         // Start of the line
         let point = Point::new(0.0, 0.0);
@@ -265,7 +310,7 @@ mod tests {
 
     #[test]
     fn linestring_with_point() {
-        let line_string: LineString<f32> = vec![(0.0, 0.0), (10.0, 0.0)].into();
+        let line_string = line_string![(0.0, 0.0), (10.0, 0.0)];
 
         // Start of LineString
         let point = Point::new(0.0, 0.0);
@@ -302,18 +347,10 @@ mod tests {
 
     #[test]
     fn polygon_with_point() {
-        let exterior = LineString(vec![
-                                  Coordinate { x: 0.0, y: 0.0 },
-                                  Coordinate { x: 1.0, y: 1.0 },
-                                  Coordinate { x: 1.0, y: 0.0 },
-                                  Coordinate { x: 0.0, y: 0.0 },
-        ]);
-        let interiors = vec![LineString(vec![
-                                        Coordinate { x: 0.1, y: 0.1 },
-                                        Coordinate { x: 0.9, y: 0.9 },
-                                        Coordinate { x: 0.9, y: 0.1 },
-                                        Coordinate { x: 0.1, y: 0.1 },
-        ])];
+        let exterior = line_string![(0.0, 0.0), (1.0, 1.0), (1.0, 0.0), (0.0, 0.0)];
+        let interiors = vec![
+            line_string![(0.1, 0.1), (0.9, 0.9), (0.9, 0.1), (0.1, 0.1)],
+        ];
         let polygon = Polygon::new(exterior, interiors);
 
         // Start of Polygon exterior
@@ -367,14 +404,7 @@ mod tests {
 
     #[test]
     fn multipoint_with_point() {
-        let points = vec![
-            Point::new(0.0, 0.0),
-            Point::new(1.0, 1.0),
-            Point::new(1.0, 0.0),
-            Point::new(0.0, 0.0),
-        ];
-
-        let multi_point = MultiPoint(points);
+        let multi_point = multi_point!((0.0, 0.0), (1.0, 1.0), (1.0, 0.0), (0.0, 0.0));
 
         // Point on MultiPoint
         let point = Point::new(0.0, 0.0);
@@ -395,8 +425,8 @@ mod tests {
 
     #[test]
     fn multilinestring_with_point() {
-        let line_string1: LineString<f32> = vec![(0.0, 0.0), (10.0, 0.0)].into();
-        let line_string2: LineString<f32> = vec![(100.0, 100.0), (200.0, 100.0)].into();
+        let line_string1 = line_string![(0.0, 0.0), (10.0, 0.0)];
+        let line_string2 = line_string![(100.0, 100.0), (200.0, 100.0)];
         let mls = MultiLineString(vec![line_string1, line_string2]);
 
         // Start of first LineString in MultiLineString
@@ -435,34 +465,19 @@ mod tests {
     #[test]
     fn multipolygon_with_point() {
         let polygon1 = {
-            let exterior = LineString(vec![
-                                      Coordinate { x: 0.0, y: 0.0 },
-                                      Coordinate { x: 1.0, y: 1.0 },
-                                      Coordinate { x: 1.0, y: 0.0 },
-                                      Coordinate { x: 0.0, y: 0.0 },
-            ]);
-            let interiors = vec![LineString(vec![
-                                            Coordinate { x: 0.1, y: 0.1 },
-                                            Coordinate { x: 0.9, y: 0.9 },
-                                            Coordinate { x: 0.9, y: 0.1 },
-                                            Coordinate { x: 0.1, y: 0.1 },
-            ])];
+            let exterior = line_string![(0.0, 0.0), (1.0, 1.0), (1.0, 0.0), (0.0, 0.0)];
+            let interiors = vec![
+                line_string![(0.1, 0.1), (0.9, 0.9), (0.9, 0.1), (0.1, 0.1)],
+            ];
             Polygon::new(exterior, interiors)
         };
 
         let polygon2 = {
-            let exterior = LineString(vec![
-                                      Coordinate { x: 100.0, y: 100.0 },
-                                      Coordinate { x: 101.0, y: 101.0 },
-                                      Coordinate { x: 101.0, y: 100.0 },
-                                      Coordinate { x: 100.0, y: 100.0 },
-            ]);
-            let interiors = vec![LineString(vec![
-                                            Coordinate { x: 100.1, y: 100.1 },
-                                            Coordinate { x: 100.9, y: 100.9 },
-                                            Coordinate { x: 100.9, y: 100.1 },
-                                            Coordinate { x: 100.1, y: 100.1 },
-            ])];
+            let exterior = line_string![(100.0, 100.0), (101.0, 101.0), (101.0, 100.0), (100.0, 100.0)];
+
+            let interiors = vec![
+                line_string![(100.1, 100.1), (100.9, 100.9), (100.9, 100.1), (100.1, 100.1)],
+            ];
             Polygon::new(exterior, interiors)
         };
 
