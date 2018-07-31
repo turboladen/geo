@@ -11,6 +11,10 @@ extern crate postgis;
 extern crate proj;
 extern crate spade;
 
+#[cfg(test)]
+#[macro_use]
+mod test_macros;
+
 pub use algorithm::*;
 pub use traits::ToGeo;
 pub use types::*;
