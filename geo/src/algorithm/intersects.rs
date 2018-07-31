@@ -1,6 +1,6 @@
 use algorithm::contains::Contains;
 use num_traits::Float;
-use {Line, LineString, MultiLineString, MultiPoint, MultiPolygon, Point, Polygon, Rect};
+use {Geometry, GeometryCollection, Line, LineString, MultiLineString, MultiPoint, MultiPolygon, Point, Polygon, Rect};
 
 /// Checks if the geometry A intersects the geometry B.
 
@@ -120,6 +120,24 @@ where
 {
     fn intersects(&self, multi_polygon: &MultiPolygon<T>) -> bool {
         multi_polygon.intersects(self)
+    }
+}
+
+impl<T> Intersects<GeometryCollection<T>> for Point<T>
+where
+    T: Float,
+{
+    fn intersects(&self, geometry_collection: &GeometryCollection<T>) -> bool {
+        geometry_collection.intersects(self)
+    }
+}
+
+impl<T> Intersects<Geometry<T>> for Point<T>
+where
+    T: Float,
+{
+    fn intersects(&self, geometry: &Geometry<T>) -> bool {
+        geometry.intersects(self)
     }
 }
 
@@ -357,6 +375,33 @@ where
 {
     fn intersects(&self, point: &Point<T>) -> bool {
         self.0.iter().any(|polygon| polygon.intersects(point))
+    }
+}
+
+impl<T> Intersects<Point<T>> for Geometry<T>
+where
+    T: Float,
+{
+    fn intersects(&self, point: &Point<T>) -> bool {
+        match self {
+            Geometry::Point(self_point)                       => self_point.intersects(point),
+            Geometry::Line(line)                              => line.intersects(point),
+            Geometry::LineString(line_string)                 => line_string.intersects(point),
+            Geometry::Polygon(polygon)                        => polygon.intersects(point),
+            Geometry::MultiPoint(multi_point)                 => multi_point.intersects(point),
+            Geometry::MultiLineString(multi_line_string)      => multi_line_string.intersects(point),
+            Geometry::MultiPolygon(multi_polygon)             => multi_polygon.intersects(point),
+            Geometry::GeometryCollection(geometry_collection) => geometry_collection.intersects(point),
+        }
+    }
+}
+
+impl<T> Intersects<Point<T>> for GeometryCollection<T>
+where
+    T: Float,
+{
+    fn intersects(&self, point: &Point<T>) -> bool {
+        self.0.iter().any(|geometry| geometry.intersects(point))
     }
 }
 
