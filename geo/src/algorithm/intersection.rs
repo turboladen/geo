@@ -1,6 +1,6 @@
 use algorithm::intersects::Intersects;
 use num_traits::Float;
-use geo_types::{GeometryCollection, Line, LineString, MultiLineString, MultiPoint, MultiPolygon, Point, Polygon};
+use geo_types::{Geometry, GeometryCollection, Line, LineString, MultiLineString, MultiPoint, MultiPolygon, Point, Polygon};
 
 /// Describes the possible outcomes of intersecting a Point with another Geometry.
 ///
@@ -62,6 +62,14 @@ pub enum MultiPolygonIntersection<T: Float> {
 ///
 #[derive(Debug, PartialEq)]
 pub enum GeometryCollectionIntersection<T: Float> {
+    Point(Point<T>),
+    None
+}
+
+/// Describes the possible outcomes of intersecting a Geometry with another Geometry.
+///
+#[derive(Debug, PartialEq)]
+pub enum GeometryIntersection<T: Float> {
     Point(Point<T>),
     None
 }
@@ -163,6 +171,17 @@ impl<T> Intersection<GeometryCollection<T>> for Point<T> where T: Float {
     }
 }
 
+impl<T> Intersection<Geometry<T>> for Point<T> where T: Float {
+    type Output = PointIntersection<T>;
+
+    fn intersection(&self, rhs: &Geometry<T>) -> Self::Output {
+        match rhs.intersection(self) {
+            GeometryIntersection::Point(p) => PointIntersection::Point(p.clone()),
+            _ => PointIntersection::None,
+        }
+    }
+}
+
 impl<T> Intersection<Point<T>> for Line<T> where T: Float {
     type Output = LineIntersection<T>;
 
@@ -243,6 +262,18 @@ impl<T> Intersection<Point<T>> for GeometryCollection<T> where T: Float {
             GeometryCollectionIntersection::Point(rhs.clone())
         } else {
             GeometryCollectionIntersection::None
+        }
+    }
+}
+
+impl<T> Intersection<Point<T>> for Geometry<T> where T: Float {
+    type Output = GeometryIntersection<T>;
+
+    fn intersection(&self, rhs: &Point<T>) -> Self::Output {
+        if self.intersects(rhs) {
+            GeometryIntersection::Point(rhs.clone())
+        } else {
+            GeometryIntersection::None
         }
     }
 }
@@ -746,5 +777,19 @@ mod tests {
             geometry_collection.intersection(&point),
             GeometryCollectionIntersection::None,
         );
+    }
+
+    #[test]
+    fn geometry_point_with_point() {
+        let p1 = Point::new(180.0, 180.0);
+        let p2 = p1.clone();
+        let geometry_point = Geometry::Point(p1);
+
+        assert_eq!(geometry_point.intersection(&p2), GeometryIntersection::Point(p1.clone()));
+
+        // Not intersecting
+        let p2 = Point::new(2.0, 2.0);
+
+        assert_eq!(geometry_point.intersection(&p2), GeometryIntersection::None)
     }
 }
